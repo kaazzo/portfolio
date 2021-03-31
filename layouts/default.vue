@@ -1,20 +1,8 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
+  <v-app>
+    <v-navigation-drawer v-model="drawer" fixed temporary app>
       <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
+        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -24,94 +12,133 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
+    <v-app-bar fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
+      <v-tabs>
+        <v-tab
+          v-for="(item, i) in items"
+          :key="i"
+          :to="item.to"
+          v-text="item.title"
+        >
+        </v-tab>
+      </v-tabs>
+      <v-switch v-model="$vuetify.theme.dark">
+        <template v-slot:label>
+          <v-icon>mdi-weather-night </v-icon>
+        </template>
+      </v-switch>
     </v-app-bar>
-    <v-content>
+    <v-main>
+      <v-toolbar
+        v-if="$route.path != '/'"
+        prominent
+        light
+        flat
+        src="/background.jpg"
+      >
+        <v-toolbar-title align="center" justify="center">{{
+          $route.path.replace('/', '').toUpperCase()
+        }}</v-toolbar-title>
+      </v-toolbar>
       <v-container>
         <nuxt />
       </v-container>
-    </v-content>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :fixed="fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+    </v-main>
+    <v-footer app>
+      <span>&copy; {{ new Date().getFullYear() }} kaazzo</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      clipped: false,
       drawer: false,
-      fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-home',
+          title: 'HOME',
           to: '/'
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          icon: 'mdi-clipboard-account',
+          title: 'ABOUT',
+          to: '/about'
+        },
+        {
+          icon: 'mdi-pencil',
+          title: 'SKILLS',
+          to: '/skills'
+        },
+        {
+          icon: 'mdi-file-multiple',
+          title: 'WORKS',
+          to: '/works'
         }
       ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      title: "kaazzo's portfolio"
     }
   }
+  // watch: {
+  //   darkMode: () => {
+  //     this.$vuetify.theme.dark = darkMode
+  //   }
+  // }
 }
 </script>
+
+<style lang="scss" scoped>
+$xs: 600;
+$sm: 960;
+$md: 1264;
+$lg: 1904;
+
+$sp-max: calc($xs - 1) px;
+$tb-min: $xs + px;
+$tb-max: calc($sm - 1) px;
+$pc-min: $sm + px;
+
+/* PC */
+@mixin display_pc {
+  @media (min-width: $pc-min) {
+    @content;
+  }
+}
+
+/* タブレット */
+@mixin display_tab {
+  @media (min-width: $tb-min) and (max-width: $tb-max) {
+    @content;
+  }
+}
+
+/* スマホ */
+@mixin display_sp {
+  @media (max-width: $sp-max) {
+    @content;
+  }
+}
+
+.v-app-bar__nav-icon {
+  @include display_pc {
+    display: none !important;
+  }
+}
+
+.v-tabs {
+  display: none;
+
+  @include display_pc {
+    display: block !important;
+  }
+}
+
+.v-toolbar__title {
+  overflow: visible !important;
+  margin-right: 50px !important;
+}
+</style>
